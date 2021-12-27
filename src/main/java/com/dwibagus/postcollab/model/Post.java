@@ -13,7 +13,7 @@ public class Post {
     private String id;
     private String categoryId;
     private String name;
-    private String userId;
+    private Long userId;
     private String image = null;
 
 }

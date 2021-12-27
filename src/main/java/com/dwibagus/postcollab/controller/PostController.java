@@ -6,6 +6,7 @@ import com.dwibagus.postcollab.model.Image;
 import com.dwibagus.postcollab.model.Post;
 import com.dwibagus.postcollab.service.CategoryService;
 import com.dwibagus.postcollab.service.PostService;
+import com.dwibagus.postcollab.vo.ResponseTemplateVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,12 @@ public class PostController {
         }
 
 
+    }
+    @GetMapping("/vo/{id}")
+    public ResponseTemplateVO getPostWithUser(@PathVariable String  id){
+        System.out.println("MASUK SINIIIIIIII");
+        System.out.println(id);
+        return postService.getPostWithUser(id);
     }
 
 
