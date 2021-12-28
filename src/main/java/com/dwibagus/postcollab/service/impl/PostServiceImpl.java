@@ -56,7 +56,7 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("Not Found");
         });
         System.out.println(post.getUserId());
-        User user = restTemplate.getForObject("http://localhost:8080/auth/user/" + post.getUserId(), User.class);
+        User user = restTemplate.getForObject("http://AUTH/auth/user/" + post.getUserId(), User.class);
         System.out.println(user.getEmail());
         vo.setUser(user);
         vo.setPost(post);

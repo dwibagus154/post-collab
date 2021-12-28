@@ -4,10 +4,13 @@ package com.dwibagus.postcollab.controller;
 import com.dwibagus.postcollab.model.Category;
 import com.dwibagus.postcollab.model.Image;
 import com.dwibagus.postcollab.model.Post;
+import com.dwibagus.postcollab.response.CommonResponse;
+import com.dwibagus.postcollab.response.CommonResponseGenerator;
 import com.dwibagus.postcollab.service.CategoryService;
 import com.dwibagus.postcollab.service.PostService;
 import com.dwibagus.postcollab.vo.ResponseTemplateVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +25,13 @@ public class PostController {
     private final PostService postService;
     private final CategoryService categoryService;
 
+    @Autowired
+    CommonResponseGenerator commonResponseGenerator;
+
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Post post){
+    public CommonResponse<Post> create(@RequestBody Post post){
         Post post1 = postService.create(post);
-        return ResponseEntity.ok(post1);
+        return commonResponseGenerator.successResponse(post1, "success");
     }
 
     @PostMapping("/upload")

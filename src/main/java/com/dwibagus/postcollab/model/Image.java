@@ -4,10 +4,14 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Data
 @Document("image")
 public class Image {
     @Id
     private String id;
     private String name = null;
+    private Date created_at = new Date();
+    private Date updated_at = new Date();
 }
