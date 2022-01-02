@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
+
 
 @Data
 @AllArgsConstructor
@@ -13,13 +15,9 @@ public class User {
     private Long id;
     private String username;
     private String email;
-    private String password;
     private Integer isAdmin;
     private boolean active;
-    private boolean enabled;
-    private boolean authorities;
-    private boolean accountNonLocked;
-    private boolean accountNonExpired;
-    private boolean credentialsNonExpired;
+    private Date created_at;
+    private Date updated_at;
 
 }

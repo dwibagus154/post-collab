@@ -11,5 +11,5 @@ public class CommonResponse<T> {
 
     private String status;
     private String message;
-    private T datass;
+    private T data;
 }
