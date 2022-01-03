@@ -19,8 +19,7 @@ class PostServiceImplTest {
     private PostServiceImpl service;
     @Mock
     private PostRepository postRepository;
-    @Mock
-    private ImageRepository imageRepository;
+
 
     @BeforeEach
     public void setUp(){

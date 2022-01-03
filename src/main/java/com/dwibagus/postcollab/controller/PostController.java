@@ -41,7 +41,7 @@ public class PostController {
     private KafkaProducer producer;
 
 //    For Post
-    @PostMapping
+    @PostMapping("/original")
     public ResponseEntity<?> createPost(@RequestBody Post post){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.create(post), "create post success", "200"));
@@ -50,7 +50,7 @@ public class PostController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/original")
     public ResponseEntity<?> getAllPost(){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.getAllPost(), "get all post success", "200"));
@@ -68,7 +68,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/original/{id}")
     public ResponseEntity<?> findById(@PathVariable String id){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.findById(id), "get post success", "200"));
@@ -127,7 +127,24 @@ public class PostController {
         }
     }
 
+    //    Post Template
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPostWithUserById(@PathVariable String  id){
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(postService.getPostWithUserById(id), "get post with user success", "200"));
+        }catch (Exception e){
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post", "400"), HttpStatus.BAD_REQUEST);
+        }
+    }
 
+    @GetMapping
+    public ResponseEntity<?> getPostWithUser(){
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(postService.getPostWithUser(), "get post with user success", "200"));
+        }catch (Exception e){
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post", "400"), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
 //    for category
@@ -196,7 +213,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/comment")
+    @GetMapping("/original/comment")
     public ResponseEntity<?> getComment(){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.getComment(), "get all comment success", "200"));
@@ -205,7 +222,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/comment/{id}")
+    @GetMapping("/original/comment/{id}")
     public ResponseEntity<?> getComment(@PathVariable String id){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentById(id), "get comment by id success", "200"));
@@ -214,7 +231,7 @@ public class PostController {
         }
     }
 
-    @PutMapping("/comment/{id}")
+    @PutMapping("/original/comment/{id}")
     public ResponseEntity<?> updateCommentById(@PathVariable String id, @RequestBody Comment comment){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.updateCommentById(id, comment), "updatel comment success", "200"));
@@ -232,8 +249,27 @@ public class PostController {
         }
     }
 
+    //    Comment Template
+    @GetMapping("/comment/{id}")
+    public ResponseEntity<?> getCommentWithUserById(@PathVariable String  id){
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUserById(id), "get likes with user success", "200"));
+        }catch (Exception e){
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment", "400"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/comment")
+    public ResponseEntity<?> getCommentWithUser(){
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUser(), "get likes with user success", "200"));
+        }catch (Exception e){
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment", "400"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 // Likes
-    @PostMapping("/likes")
+    @PostMapping("/original/likes")
     public ResponseEntity<?> createLikes(@RequestBody Likes likes){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.createLikes(likes), "create likes success", "200"));
@@ -242,7 +278,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/likes")
+    @GetMapping("/original/likes")
     public ResponseEntity<?> getAllLikes(){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.getAllLikes(), "get all likes success", "200"));
@@ -251,7 +287,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/likes/{id}")
+    @GetMapping("/original/likes/{id}")
     public ResponseEntity<?> getLikesById(@PathVariable String id){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.getLikesById(id), "get likes by id success", "200"));
@@ -272,27 +308,8 @@ public class PostController {
 
 
 
-//    Post Template
-    @GetMapping("/vo/{id}")
-    public ResponseEntity<?> getPostWithUserById(@PathVariable String  id){
-        try {
-            return ResponseEntity.ok(commonResponseGenerator.response(postService.getPostWithUserById(id), "get post with user success", "200"));
-        }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post", "400"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/vo")
-    public ResponseEntity<?> getPostWithUser(){
-        try {
-            return ResponseEntity.ok(commonResponseGenerator.response(postService.getPostWithUser(), "get post with user success", "200"));
-        }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post", "400"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
 //    Likes Template
-    @GetMapping("/likes/vo/{id}")
+    @GetMapping("/likes/{id}")
     public ResponseEntity<?> getLikesWithUserById(@PathVariable String  id){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.getLikesWithUserById(id), "get likes with user success", "200"));
@@ -301,31 +318,12 @@ public class PostController {
         }
     }
 
-    @GetMapping("/likes/vo")
+    @GetMapping("/likes")
     public ResponseEntity<?> getLikesWithUser(){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.getLikesWithUser(), "get likes with user success", "200"));
         }catch (Exception e){
             return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes", "400"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-//    Comment Template
-    @GetMapping("/comment/vo/{id}")
-    public ResponseEntity<?> getCommentWithUserById(@PathVariable String  id){
-        try {
-            return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUserById(id), "get likes with user success", "200"));
-        }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment", "400"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/comment/vo")
-    public ResponseEntity<?> getCommentWithUser(){
-        try {
-            return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUser(), "get likes with user success", "200"));
-        }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment", "400"), HttpStatus.BAD_REQUEST);
         }
     }
 

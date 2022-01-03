@@ -3,10 +3,7 @@ package com.dwibagus.postcollab.service.impl;
 import com.dwibagus.postcollab.kafka.KafkaConsumer;
 import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.*;
-import com.dwibagus.postcollab.payload.TokenResponse;
 import com.dwibagus.postcollab.repository.*;
-import com.dwibagus.postcollab.security.JwtTokenProvider;
-import com.dwibagus.postcollab.service.LikesService;
 import com.dwibagus.postcollab.service.PostService;
 import com.dwibagus.postcollab.vo.object.CommentResponse;
 import com.dwibagus.postcollab.vo.object.LikesResponse;
@@ -44,6 +41,8 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    private String uriAuth = "http://localhost:8080/auth/vo/user/";
 
     @Override
     public Post create(Post post){
@@ -123,21 +122,22 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> {
             throw new RuntimeException("Not Found");
         });
-        System.out.println(post.getCategoryId());
         Category category = categoryRepository.findById(post.getCategoryId()).orElseThrow(() -> {
             throw new RuntimeException("Not Found");
         });
-        System.out.println(category.getCategoryName());
-        System.out.println(post.getUserId());
-        User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + post.getUserId(), User.class);
-        System.out.println(user.getEmail());
+        FilePost filePost = null;
+        if (post.getFile() != null){
+            filePost = filePostRepository.findById(post.getFile()).get();
+        }
+
+        User user = restTemplate.getForObject(this.uriAuth + post.getUserId(), User.class);
 
 //        create response
         vo.setId(post.getId());
         vo.setName(post.getName());
         vo.setUser(user);
         vo.setCategory(category);
-        vo.setFile(post.getFile());
+        vo.setFile(filePost);
         vo.setTotalComment(post.getTotalComment());
         vo.setTotalLikes(post.getTotalLikes());
         vo.setCreated_at(post.getCreated_at());
@@ -158,7 +158,7 @@ public class PostServiceImpl implements PostService {
         for (int i=0; i < commentList.size(); i++){
             if (commentList.get(i).getPostId().equals(id)){
                 commentResponse.setId(commentList.get(i).getId());
-                user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + commentList.get(i).getUserId(), User.class);
+                user = restTemplate.getForObject(this.uriAuth + commentList.get(i).getUserId(), User.class);
                 commentResponse.setUser(user);
                 commentResponse.setCreated_at(commentList.get(i).getCreated_at());
                 commentResponse.setCreated_at(commentList.get(i).getUpdated_at());
