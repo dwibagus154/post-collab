@@ -329,14 +329,6 @@ public class PostController {
         }
     }
 
-    @PostMapping("/c")
-    public ResponseEntity<?> get(@RequestBody TokenResponse token){
-        try{
-            return ResponseEntity.ok(postService.contoh(token));
-        }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no user with id ", "400"),HttpStatus.BAD_REQUEST);
-        }
-    }
 
     @PostMapping("/send")
     public void send(@RequestBody String data) {
