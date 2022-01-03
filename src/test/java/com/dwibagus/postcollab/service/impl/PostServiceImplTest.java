@@ -1,7 +1,6 @@
 package com.dwibagus.postcollab.service.impl;
 
 import com.dwibagus.postcollab.model.Post;
-import com.dwibagus.postcollab.repository.ImageRepository;
 import com.dwibagus.postcollab.repository.PostRepository;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PostServiceImplTest {

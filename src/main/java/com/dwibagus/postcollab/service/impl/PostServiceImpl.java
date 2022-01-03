@@ -2,15 +2,14 @@ package com.dwibagus.postcollab.service.impl;
 
 import com.dwibagus.postcollab.kafka.KafkaConsumer;
 import com.dwibagus.postcollab.kafka.KafkaProducer;
-import com.dwibagus.postcollab.model.Category;
-import com.dwibagus.postcollab.model.Comment;
-import com.dwibagus.postcollab.model.FilePost;
-import com.dwibagus.postcollab.model.Post;
+import com.dwibagus.postcollab.model.*;
 import com.dwibagus.postcollab.payload.TokenResponse;
 import com.dwibagus.postcollab.repository.*;
 import com.dwibagus.postcollab.security.JwtTokenProvider;
 import com.dwibagus.postcollab.service.LikesService;
 import com.dwibagus.postcollab.service.PostService;
+import com.dwibagus.postcollab.vo.object.CommentResponse;
+import com.dwibagus.postcollab.vo.object.LikesResponse;
 import com.dwibagus.postcollab.vo.post.ResponsePostWithComment;
 import com.dwibagus.postcollab.vo.post.ResponsePostWithLikes;
 import com.dwibagus.postcollab.vo.post.ResponseTemplateVO;
@@ -149,15 +148,72 @@ public class PostServiceImpl implements PostService {
     }
 
     public ResponsePostWithComment findCommentById(String id){
-//        ResponsePostWithComment responsePostWithComment = new ResponsePostWithComment();
-//        Post post = postRepository.findById(id).get();
-//        List<Comment> commentList =
-        return  null;
+        ResponsePostWithComment responsePostWithComment = new ResponsePostWithComment();
+        User user = new User();
+        ResponseTemplateVO post = this.getPostWithUserById(id);
+        List<Comment> commentList = commentRepository.findAll();
+        List<CommentResponse> commentListPost = new ArrayList<>();
+        CommentResponse commentResponse = new CommentResponse();
+
+        for (int i=0; i < commentList.size(); i++){
+            if (commentList.get(i).getPostId().equals(id)){
+                commentResponse.setId(commentList.get(i).getId());
+                user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + commentList.get(i).getUserId(), User.class);
+                commentResponse.setUser(user);
+                commentResponse.setCreated_at(commentList.get(i).getCreated_at());
+                commentResponse.setCreated_at(commentList.get(i).getUpdated_at());
+                commentListPost.add(commentResponse);
+            }
+        }
+
+//        create response
+        responsePostWithComment.setId(post.getId());
+        responsePostWithComment.setName(post.getName());
+        responsePostWithComment.setUser(post.getUser());
+        responsePostWithComment.setCategory(post.getCategory());
+        responsePostWithComment.setFile(post.getFile());
+        responsePostWithComment.setTotalComment(post.getTotalComment());
+        responsePostWithComment.setTotalLikes(post.getTotalLikes());
+        responsePostWithComment.setCreated_at(post.getCreated_at());
+        responsePostWithComment.setUpdated_at(post.getUpdated_at());
+        responsePostWithComment.setComment(commentListPost);
+
+        return responsePostWithComment;
 
     }
 
     public ResponsePostWithLikes findLikesById(String id){
-        return null;
+        ResponsePostWithLikes responsePostWithLikes = new ResponsePostWithLikes();
+        User user = new User();
+        ResponseTemplateVO post = this.getPostWithUserById(id);
+        List<Likes> likesList = likesRepository.findAll();
+        List<LikesResponse> likesListPost = new ArrayList<>();
+        LikesResponse likesResponse = new LikesResponse();
+
+        for (int i=0; i < likesList.size(); i++){
+            if (likesList.get(i).getPostId().equals(id)){
+                likesResponse.setId(likesList.get(i).getId());
+                user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" +  likesList.get(i).getUserId(), User.class);
+                likesResponse.setUser(user);
+                likesResponse.setCreated_at(likesList.get(i).getCreated_at());
+                likesResponse.setCreated_at(likesList.get(i).getUpdated_at());
+                likesListPost.add(likesResponse);
+            }
+        }
+
+//        create response
+        responsePostWithLikes.setId(post.getId());
+        responsePostWithLikes.setName(post.getName());
+        responsePostWithLikes.setUser(post.getUser());
+        responsePostWithLikes.setCategory(post.getCategory());
+        responsePostWithLikes.setFile(post.getFile());
+        responsePostWithLikes.setTotalComment(post.getTotalComment());
+        responsePostWithLikes.setTotalLikes(post.getTotalLikes());
+        responsePostWithLikes.setCreated_at(post.getCreated_at());
+        responsePostWithLikes.setUpdated_at(post.getUpdated_at());
+        responsePostWithLikes.setLikes(likesListPost);
+
+        return responsePostWithLikes;
     }
 
 }
