@@ -13,13 +13,13 @@ import java.util.List;
 
 public interface PostService {
 
-    Post create(Post post);
+    ResponseTemplateVO create(Post post);
     Post findById(String id);
     FilePost uploadFile(MultipartFile file) throws IOException;
 
     List<Post> getAllPost();
 
-    Post editById(String id, Post post);
+    ResponseTemplateVO editById(String id, Post post);
 
     Post deleteById(String id);
 

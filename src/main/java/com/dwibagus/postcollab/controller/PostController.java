@@ -41,7 +41,7 @@ public class PostController {
     private KafkaProducer producer;
 
 //    For Post
-    @PostMapping("/original")
+    @PostMapping
     public ResponseEntity<?> createPost(@RequestBody Post post){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.create(post), "create post success", "200"));
@@ -231,7 +231,7 @@ public class PostController {
         }
     }
 
-    @PutMapping("/original/comment/{id}")
+    @PutMapping("/comment/{id}")
     public ResponseEntity<?> updateCommentById(@PathVariable String id, @RequestBody Comment comment){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.updateCommentById(id, comment), "updatel comment success", "200"));
@@ -269,7 +269,7 @@ public class PostController {
     }
 
 // Likes
-    @PostMapping("/original/likes")
+    @PostMapping("/likes")
     public ResponseEntity<?> createLikes(@RequestBody Likes likes){
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.createLikes(likes), "create likes success", "200"));

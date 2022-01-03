@@ -9,6 +9,7 @@ import com.dwibagus.postcollab.vo.likes.ResponseLikesTemplate;
 import com.dwibagus.postcollab.vo.object.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,17 +27,8 @@ public class LikesServiceImpl implements LikesService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Override
-    public Likes createLikes(Likes likes){
-        Post post = postRepository.findById(likes.getPostId()).get();
-        User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + likes.getUserId(), User.class);
-        if (post != null && user != null){
-            post.setTotalLikes(post.getTotalLikes()+1);
-            post.setUpdated_at(new Date());
-            postRepository.save(post);
-        }
-        return likesRepository.save(likes);
-    }
+    @Value("${uriAuth}")
+    private String uriAuth;
 
     @Override
     public List<Likes> getAllLikes(){
@@ -51,15 +43,30 @@ public class LikesServiceImpl implements LikesService {
     }
 
 
+
     @Override
-    public Likes deleteLikesById(String id){
-        Likes likes = likesRepository.findById(id).get();
+    public ResponseLikesTemplate createLikes(Likes likes){
         Post post = postRepository.findById(likes.getPostId()).get();
-        if (post != null){
-            post.setTotalComment(post.getTotalComment()-1);
+        User user = restTemplate.getForObject(this.uriAuth + likes.getUserId(), User.class);
+        if (post != null && user != null){
+            post.setTotalLikes(post.getTotalLikes()+1);
             post.setUpdated_at(new Date());
             postRepository.save(post);
         }
+        likesRepository.save(likes);
+        return this.getLikesWithUserById(likes.getId());
+    }
+
+    @Override
+    public Likes deleteLikesById(String id){
+        Likes likes = likesRepository.findById(id).get();
+//        Post post = postRepository.findById(likes.getPostId()).get();
+//        if (post != null){
+//            post.setTotalComment(post.getTotalComment()-1);
+//            post.setUpdated_at(new Date());
+//            postRepository.save(post);
+//        }
+//        ResponseLikesTemplate responseLikesTemplate = this.getLikesWithUserById(id);
         likesRepository.deleteById(id);
         return likes;
     }
@@ -69,7 +76,7 @@ public class LikesServiceImpl implements LikesService {
         ResponseLikesTemplate responseLikesTemplate = new ResponseLikesTemplate();
         Likes likes = likesRepository.findById(id).get();
 
-        User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + likes.getUserId(), User.class);
+        User user = restTemplate.getForObject(this.uriAuth + likes.getUserId(), User.class);
 
         responseLikesTemplate.setCreated_at(likes.getCreated_at());
         responseLikesTemplate.setUpdated_at(likes.getUpdated_at());
@@ -86,7 +93,7 @@ public class LikesServiceImpl implements LikesService {
         User user = new User();
         List<Likes> allLikes = likesRepository.findAll();
         for (int i = 0; i < allLikes.size(); i++){
-            user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + allLikes.get(i).getUserId(), User.class);
+            user = restTemplate.getForObject(this.uriAuth + allLikes.get(i).getUserId(), User.class);
             responseLikesTemplate.setCreated_at(allLikes.get(i).getCreated_at());
             responseLikesTemplate.setUpdated_at(allLikes.get(i).getUpdated_at());
             responseLikesTemplate.setPost(postRepository.findById(allLikes.get(i).getPostId()).get());

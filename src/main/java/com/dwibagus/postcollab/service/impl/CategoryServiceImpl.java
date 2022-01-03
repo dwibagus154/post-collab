@@ -24,9 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findByIdCategory(String id){
-        return categoryRepository.findById(id).orElseThrow(() -> {
-            throw  new RuntimeException("Not Found");
-        });
+        return categoryRepository.findById(id).get();
     }
 
     @Override

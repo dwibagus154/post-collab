@@ -13,6 +13,7 @@ import com.dwibagus.postcollab.vo.post.ResponseTemplateVO;
 import com.dwibagus.postcollab.vo.object.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,23 +43,22 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private String uriAuth = "http://localhost:8080/auth/vo/user/";
+    @Value("${uriAuth}")
+    private String uriAuth;
 
     @Override
-    public Post create(Post post){
-
-        return postRepository.save(post);
+    public ResponseTemplateVO create(Post post){
+        postRepository.save(post);
+        return this.getPostWithUserById(post.getId());
     }
 
     @Override
     public Post findById(String id){
-        return postRepository.findById(id).orElseThrow(() -> {
-            throw new RuntimeException("Not Found");
-        });
+        return postRepository.findById(id).get();
     }
 
     @Override
-    public Post editById(String id, Post post){
+    public ResponseTemplateVO editById(String id, Post post){
         Post post1 = postRepository.findById(id).get();
         if (post.getName() != null){
             post1.setName(post.getName());
@@ -71,15 +71,15 @@ public class PostServiceImpl implements PostService {
         }
         post1.setUpdated_at(new Date());
         postRepository.save(post1);
-        return post1;
+        return this.getPostWithUserById(post1.getId());
     }
 
     public Post deleteById(String id) {
         Post post = postRepository.findById(id).get();
-
-//      send kafka
-        String data = "post id = " + id;
-        producer.produce(id);
+//        ResponseTemplateVO vo = this.getPostWithUserById(id);
+//
+////      send kafka
+//        producer.produce(id);
 
         postRepository.deleteById(id);
         return post;
@@ -107,9 +107,31 @@ public class PostServiceImpl implements PostService {
         List<ResponseTemplateVO> allPostWithUser = new ArrayList<>();
         ResponseTemplateVO vo = new ResponseTemplateVO();
         List<Post> posts = postRepository.findAll();
-        for (int i = 0; i < posts.size(); i++){
-            vo = this.getPostWithUserById(posts.get(i).getId());
+
+        //        delete post if user deleted
+        List<String> messages = consumer.messages;
+        if (messages.size() > 0){
+            for (int i = 0; i < posts.size(); i++) {
+                for (int j = 0; j < messages.size(); j++) {
+                    System.out.print("cek kafka ");
+                    System.out.print(i);
+                    System.out.println(j);
+                    if (String.valueOf(posts.get(i).getUserId()).equals(messages.get(j))) {
+                        System.out.println("berhasill");
+                        postRepository.deleteById(posts.get(i).getId());
+                    }
+                }
+            }
+        }
+        System.out.println("selesai cek");
+
+        posts = postRepository.findAll();
+        System.out.println(posts.size());
+        for (int k = 0; k < posts.size(); k++){
+            System.out.println(k);
+            vo = this.getPostWithUserById(posts.get(k).getId());
             allPostWithUser.add(vo);
+            System.out.println(k);
         }
         return allPostWithUser;
 
@@ -154,6 +176,7 @@ public class PostServiceImpl implements PostService {
         List<Comment> commentList = commentRepository.findAll();
         List<CommentResponse> commentListPost = new ArrayList<>();
         CommentResponse commentResponse = new CommentResponse();
+
 
         for (int i=0; i < commentList.size(); i++){
             if (commentList.get(i).getPostId().equals(id)){

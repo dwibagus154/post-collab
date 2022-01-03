@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface CommentService {
 
-    Comment createComment(Comment comment);
-
     List<Comment> getComment();
 
     Comment getCommentById(String id);
 
-    Comment updateCommentById(String id, Comment comment);
+    ResponseCommentTemplate createComment(Comment comment);
+
+    ResponseCommentTemplate updateCommentById(String id, Comment comment);
 
     Comment deleteCommentById(String id);
 

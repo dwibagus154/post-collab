@@ -10,6 +10,7 @@ import com.dwibagus.postcollab.vo.comment.ResponseCommentTemplate;
 import com.dwibagus.postcollab.vo.object.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,37 +31,35 @@ public class CommentServiceIml implements CommentService {
     @Autowired
     private KafkaConsumer consumer;
 
-    @Override
-    public Comment createComment(Comment comment){
-        Post post = postRepository.findById(comment.getPostId()).get();
-        User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + comment.getUserId(), User.class);
-        if (post != null && user != null){
-            post.setTotalComment(post.getTotalComment()+1);
-            post.setUpdated_at(new Date());
-            postRepository.save(post);
-        }
-        return commentRepository.save(comment);
-    }
+    @Value("${uriAuth}")
+    private String uriAuth;
 
     @Override
     public List<Comment> getComment(){
-        List<String> messages = consumer.messages;
-        for (int i = 0; i < messages.size(); i++){
-            System.out.println(messages.get(i));
-        }
+
         return commentRepository.findAll();
     }
 
     @Override
     public Comment getCommentById(String id){
-        return commentRepository.findById(id).orElseThrow(() -> {
-            throw  new RuntimeException("Not Found");
-        });
+        return commentRepository.findById(id).get();
     }
 
+    @Override
+    public ResponseCommentTemplate createComment(Comment comment){
+        Post post = postRepository.findById(comment.getPostId()).get();
+        User user = restTemplate.getForObject(this.uriAuth + comment.getUserId(), User.class);
+        if (post != null && user != null){
+            post.setTotalComment(post.getTotalComment()+1);
+            post.setUpdated_at(new Date());
+            postRepository.save(post);
+        }
+        commentRepository.save(comment);
+        return this.getCommentWithUserById(comment.getId());
+    }
 
     @Override
-    public Comment updateCommentById(String id, Comment comment){
+    public ResponseCommentTemplate updateCommentById(String id, Comment comment){
         Comment comment1 = commentRepository.findById(id).get();
         if (comment.getDescription() != null){
             comment1.setDescription(comment.getDescription());
@@ -68,18 +67,19 @@ public class CommentServiceIml implements CommentService {
         }
         comment1.setUpdated_at(new Date());
         commentRepository.save(comment1);
-        return comment1;
+        return this.getCommentWithUserById(id);
     }
 
     @Override
     public Comment deleteCommentById(String id){
         Comment comment = commentRepository.findById(id).get();
-        Post post = postRepository.findById(comment.getPostId()).get();
-        if (post != null){
-            post.setTotalComment(post.getTotalComment()-1);
-            post.setUpdated_at(new Date());
-            postRepository.save(post);
-        }
+//        Post post = postRepository.findById(comment.getPostId()).get();
+//        if (post != null){
+//            post.setTotalComment(post.getTotalComment()-1);
+//            post.setUpdated_at(new Date());
+//            postRepository.save(post);
+//        }
+//        ResponseCommentTemplate responseCommentTemplate = this.getCommentWithUserById(id);
         commentRepository.deleteById(id);
         return comment;
     }
@@ -87,10 +87,11 @@ public class CommentServiceIml implements CommentService {
 
     @Override
     public ResponseCommentTemplate getCommentWithUserById(String id){
+
         ResponseCommentTemplate responseCommentTemplate = new ResponseCommentTemplate();
         Comment comment = commentRepository.findById(id).get();
 
-        User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + comment.getUserId(), User.class);
+        User user = restTemplate.getForObject(this.uriAuth + comment.getUserId(), User.class);
 
         responseCommentTemplate.setDescription(comment.getDescription());
         responseCommentTemplate.setCreated_at(comment.getCreated_at());
@@ -107,8 +108,21 @@ public class CommentServiceIml implements CommentService {
 
         User user = new User();
         List<Comment> allComment = commentRepository.findAll();
+
+//        delete comment if post deleted
+        List<String> messages = consumer.messages;
+        if (messages.size() > 0){
+            for (int i = 0; i < allComment.size(); i++) {
+                for (int j = 0; j < messages.size(); j++) {
+                    System.out.println("cek kafka");
+                    if (allComment.get(i).getPostId().equals(messages.get(j))) {
+                        commentRepository.deleteById(allComment.get(i).getId());
+                    }
+                }
+            }
+        }
         for (int i = 0; i < allComment.size(); i++){
-            user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + allComment.get(i).getUserId(), User.class);
+            user = restTemplate.getForObject(this.uriAuth + allComment.get(i).getUserId(), User.class);
             responseCommentTemplate.setDescription(allComment.get(i).getDescription());
             responseCommentTemplate.setCreated_at(allComment.get(i).getCreated_at());
             responseCommentTemplate.setUpdated_at(allComment.get(i).getUpdated_at());

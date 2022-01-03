@@ -6,11 +6,12 @@ import com.dwibagus.postcollab.vo.likes.ResponseLikesTemplate;
 import java.util.List;
 
 public interface LikesService {
-    Likes createLikes(Likes likes);
 
     List<Likes> getAllLikes();
 
     Likes getLikesById(String id);
+
+    ResponseLikesTemplate createLikes(Likes likes);
 
     Likes deleteLikesById(String id);
 
