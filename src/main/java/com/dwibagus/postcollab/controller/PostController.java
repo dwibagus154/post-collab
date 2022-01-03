@@ -1,6 +1,8 @@
 package com.dwibagus.postcollab.controller;
 
 
+import com.dwibagus.postcollab.kafka.KafkaConsumer;
+import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.*;
 import com.dwibagus.postcollab.payload.TokenResponse;
 import com.dwibagus.postcollab.response.CommonResponse;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/post")
@@ -31,6 +34,13 @@ public class PostController {
 
     @Autowired
     CommonResponseGenerator commonResponseGenerator;
+
+//    kafka
+    @Autowired
+    private KafkaConsumer consumer;
+
+    @Autowired
+    private KafkaProducer producer;
 
 //    For Post
     @PostMapping
@@ -303,6 +313,32 @@ public class PostController {
         }catch (Exception e){
             return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no user with id ", "400"),HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/send")
+    public void send(@RequestBody String data) {
+        producer.produce(data);
+    }
+
+    @GetMapping("/receive")
+    public List<String> receive() {
+        return KafkaConsumer.messages;
+    }
+
+    public KafkaConsumer getConsumer() {
+        return consumer;
+    }
+
+    public void setConsumer(KafkaConsumer consumer) {
+        this.consumer = consumer;
+    }
+
+    public KafkaProducer getProducer() {
+        return producer;
+    }
+
+    public void setProducer(KafkaProducer producer) {
+        this.producer = producer;
     }
 
 }

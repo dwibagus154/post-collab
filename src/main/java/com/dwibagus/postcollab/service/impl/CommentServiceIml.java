@@ -1,5 +1,7 @@
 package com.dwibagus.postcollab.service.impl;
 
+import com.dwibagus.postcollab.kafka.KafkaConsumer;
+import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.Comment;
 import com.dwibagus.postcollab.model.Likes;
 import com.dwibagus.postcollab.model.Post;
@@ -28,6 +30,9 @@ public class CommentServiceIml implements CommentService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private KafkaConsumer consumer;
+
     @Override
     public Comment createComment(Comment comment){
         Post post = postRepository.findById(comment.getPostId()).get();
@@ -42,6 +47,10 @@ public class CommentServiceIml implements CommentService {
 
     @Override
     public List<Comment> getComment(){
+        List<String> messages = consumer.messages;
+        for (int i = 0; i < messages.size(); i++){
+            System.out.println(messages.get(i));
+        }
         return commentRepository.findAll();
     }
 
@@ -86,7 +95,9 @@ public class CommentServiceIml implements CommentService {
 
         User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + comment.getUserId(), User.class);
 
-        responseCommentTemplate.setComment(comment);
+        responseCommentTemplate.setDescription(comment.getDescription());
+        responseCommentTemplate.setCreated_at(comment.getCreated_at());
+        responseCommentTemplate.setUpdated_at(comment.getUpdated_at());
         responseCommentTemplate.setPost(postRepository.findById(comment.getPostId()).get());
         responseCommentTemplate.setUser(user);
         return responseCommentTemplate;
@@ -101,7 +112,9 @@ public class CommentServiceIml implements CommentService {
         List<Comment> allComment = commentRepository.findAll();
         for (int i = 0; i < allComment.size(); i++){
             user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + allComment.get(i).getUserId(), User.class);
-            responseCommentTemplate.setComment(allComment.get(i));
+            responseCommentTemplate.setDescription(allComment.get(i).getDescription());
+            responseCommentTemplate.setCreated_at(allComment.get(i).getCreated_at());
+            responseCommentTemplate.setUpdated_at(allComment.get(i).getUpdated_at());
             responseCommentTemplate.setPost(postRepository.findById(allComment.get(i).getPostId()).get());
             responseCommentTemplate.setUser(user);
 

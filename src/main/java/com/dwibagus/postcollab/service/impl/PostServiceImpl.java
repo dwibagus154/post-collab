@@ -1,5 +1,7 @@
 package com.dwibagus.postcollab.service.impl;
 
+import com.dwibagus.postcollab.kafka.KafkaConsumer;
+import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.Category;
 import com.dwibagus.postcollab.model.FilePost;
 import com.dwibagus.postcollab.model.Image;
@@ -37,10 +39,17 @@ public class PostServiceImpl implements PostService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
+    private KafkaConsumer consumer;
+
+    @Autowired
+    private KafkaProducer producer;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Override
     public Post create(Post post){
+
         return postRepository.save(post);
     }
 
@@ -70,6 +79,11 @@ public class PostServiceImpl implements PostService {
 
     public Post deleteById(String id) {
         Post post = postRepository.findById(id).get();
+
+//      send kafka
+        String data = "post id = " + id;
+        producer.produce(id);
+
         postRepository.deleteById(id);
         return post;
     }

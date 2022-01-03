@@ -71,7 +71,8 @@ public class LikesServiceImpl implements LikesService {
 
         User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + likes.getUserId(), User.class);
 
-        responseLikesTemplate.setLikes(likes);
+        responseLikesTemplate.setCreated_at(likes.getCreated_at());
+        responseLikesTemplate.setUpdated_at(likes.getUpdated_at());
         responseLikesTemplate.setPost(postRepository.findById(likes.getPostId()).get());
         responseLikesTemplate.setUser(user);
         return responseLikesTemplate;
@@ -86,7 +87,8 @@ public class LikesServiceImpl implements LikesService {
         List<Likes> allLikes = likesRepository.findAll();
         for (int i = 0; i < allLikes.size(); i++){
             user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + allLikes.get(i).getUserId(), User.class);
-            responseLikesTemplate.setLikes(allLikes.get(i));
+            responseLikesTemplate.setCreated_at(allLikes.get(i).getCreated_at());
+            responseLikesTemplate.setUpdated_at(allLikes.get(i).getUpdated_at());
             responseLikesTemplate.setPost(postRepository.findById(allLikes.get(i).getPostId()).get());
             responseLikesTemplate.setUser(user);
 
