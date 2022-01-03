@@ -3,18 +3,18 @@ package com.dwibagus.postcollab.service.impl;
 import com.dwibagus.postcollab.kafka.KafkaConsumer;
 import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.Category;
+import com.dwibagus.postcollab.model.Comment;
 import com.dwibagus.postcollab.model.FilePost;
-import com.dwibagus.postcollab.model.Image;
 import com.dwibagus.postcollab.model.Post;
 import com.dwibagus.postcollab.payload.TokenResponse;
-import com.dwibagus.postcollab.repository.CategoryRepository;
-import com.dwibagus.postcollab.repository.FilePostRepository;
-import com.dwibagus.postcollab.repository.ImageRepository;
-import com.dwibagus.postcollab.repository.PostRepository;
+import com.dwibagus.postcollab.repository.*;
 import com.dwibagus.postcollab.security.JwtTokenProvider;
+import com.dwibagus.postcollab.service.LikesService;
 import com.dwibagus.postcollab.service.PostService;
-import com.dwibagus.postcollab.vo.ResponseTemplateVO;
-import com.dwibagus.postcollab.vo.User;
+import com.dwibagus.postcollab.vo.post.ResponsePostWithComment;
+import com.dwibagus.postcollab.vo.post.ResponsePostWithLikes;
+import com.dwibagus.postcollab.vo.post.ResponseTemplateVO;
+import com.dwibagus.postcollab.vo.object.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,17 +26,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 //    user ctrl + shif + t to create unit testing
     private final PostRepository postRepository;
-    private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final FilePostRepository filePostRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final CommentRepository commentRepository;
+    private final LikesRepository likesRepository;
 
     @Autowired
     private KafkaConsumer consumer;
@@ -133,19 +132,32 @@ public class PostServiceImpl implements PostService {
         System.out.println(post.getUserId());
         User user = restTemplate.getForObject("http://localhost:8080/auth/vo/user/" + post.getUserId(), User.class);
         System.out.println(user.getEmail());
+
+//        create response
+        vo.setId(post.getId());
+        vo.setName(post.getName());
         vo.setUser(user);
-        vo.setPost(post);
         vo.setCategory(category);
+        vo.setFile(post.getFile());
+        vo.setTotalComment(post.getTotalComment());
+        vo.setTotalLikes(post.getTotalLikes());
+        vo.setCreated_at(post.getCreated_at());
+        vo.setUpdated_at(post.getUpdated_at());
+
 
         return vo;
     }
 
-    @Override
-    public String contoh(TokenResponse token){
-        if (jwtTokenProvider.validateToken(token.getToken())){
-            return jwtTokenProvider.getUsername(token.getToken());
-        }
-        return "tidak";
+    public ResponsePostWithComment findCommentById(String id){
+//        ResponsePostWithComment responsePostWithComment = new ResponsePostWithComment();
+//        Post post = postRepository.findById(id).get();
+//        List<Comment> commentList =
+        return  null;
+
+    }
+
+    public ResponsePostWithLikes findLikesById(String id){
+        return null;
     }
 
 }

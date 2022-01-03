@@ -1,7 +1,6 @@
-package com.dwibagus.postcollab.vo;
+package com.dwibagus.postcollab.vo.object;
 
-import com.dwibagus.postcollab.model.Likes;
-import com.dwibagus.postcollab.model.Post;
+import com.dwibagus.postcollab.vo.object.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ResponseLikesTemplate {
-    private Post post;
+@NoArgsConstructor
+public class LikesResponse {
+    private String id;
     private User user;
     private Date created_at;
     private Date updated_at;

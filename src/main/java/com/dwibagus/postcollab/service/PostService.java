@@ -1,10 +1,11 @@
 package com.dwibagus.postcollab.service;
 
 import com.dwibagus.postcollab.model.FilePost;
-import com.dwibagus.postcollab.model.Image;
 import com.dwibagus.postcollab.model.Post;
 import com.dwibagus.postcollab.payload.TokenResponse;
-import com.dwibagus.postcollab.vo.ResponseTemplateVO;
+import com.dwibagus.postcollab.vo.post.ResponsePostWithComment;
+import com.dwibagus.postcollab.vo.post.ResponsePostWithLikes;
+import com.dwibagus.postcollab.vo.post.ResponseTemplateVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,5 +26,7 @@ public interface PostService {
     List<ResponseTemplateVO> getPostWithUser();
     ResponseTemplateVO getPostWithUserById(String id);
 
-    String contoh(TokenResponse token);
+    ResponsePostWithComment findCommentById(String id);
+
+    ResponsePostWithLikes findLikesById(String id);
 }

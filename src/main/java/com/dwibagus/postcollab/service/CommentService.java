@@ -1,8 +1,7 @@
 package com.dwibagus.postcollab.service;
 
 import com.dwibagus.postcollab.model.Comment;
-import com.dwibagus.postcollab.model.Likes;
-import com.dwibagus.postcollab.vo.ResponseCommentTemplate;
+import com.dwibagus.postcollab.vo.comment.ResponseCommentTemplate;
 
 import java.util.List;
 

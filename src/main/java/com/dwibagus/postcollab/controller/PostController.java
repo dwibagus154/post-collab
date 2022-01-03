@@ -5,13 +5,11 @@ import com.dwibagus.postcollab.kafka.KafkaConsumer;
 import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.*;
 import com.dwibagus.postcollab.payload.TokenResponse;
-import com.dwibagus.postcollab.response.CommonResponse;
 import com.dwibagus.postcollab.response.CommonResponseGenerator;
 import com.dwibagus.postcollab.service.CategoryService;
 import com.dwibagus.postcollab.service.CommentService;
 import com.dwibagus.postcollab.service.LikesService;
 import com.dwibagus.postcollab.service.PostService;
-import com.dwibagus.postcollab.vo.ResponseTemplateVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -104,6 +102,31 @@ public class PostController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/{id}/comment")
+    public ResponseEntity<?> findCommentById(@PathVariable String id){
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(postService.findCommentById(id), "get post with comment success", "200"));
+        }catch (Exception e){
+            if (e.getMessage().equals("Not found")){
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/{id}/likes")
+    public ResponseEntity<?> findLikesById(@PathVariable String id){
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(postService.findLikesById(id), "get post with likes success", "200"));
+        }catch (Exception e){
+            if (e.getMessage().equals("Not found")){
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
 
 
@@ -293,7 +316,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUserById(id), "get likes with user success", "200"));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes", "400"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment", "400"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -302,7 +325,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUser(), "get likes with user success", "200"));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes", "400"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment", "400"), HttpStatus.BAD_REQUEST);
         }
     }
 

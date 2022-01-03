@@ -1,16 +1,13 @@
 package com.dwibagus.postcollab.service.impl;
 
 import com.dwibagus.postcollab.kafka.KafkaConsumer;
-import com.dwibagus.postcollab.kafka.KafkaProducer;
 import com.dwibagus.postcollab.model.Comment;
-import com.dwibagus.postcollab.model.Likes;
 import com.dwibagus.postcollab.model.Post;
 import com.dwibagus.postcollab.repository.CommentRepository;
 import com.dwibagus.postcollab.repository.PostRepository;
 import com.dwibagus.postcollab.service.CommentService;
-import com.dwibagus.postcollab.vo.ResponseCommentTemplate;
-import com.dwibagus.postcollab.vo.ResponseLikesTemplate;
-import com.dwibagus.postcollab.vo.User;
+import com.dwibagus.postcollab.vo.comment.ResponseCommentTemplate;
+import com.dwibagus.postcollab.vo.object.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

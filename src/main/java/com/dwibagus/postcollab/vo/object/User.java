@@ -1,4 +1,4 @@
-package com.dwibagus.postcollab.vo;
+package com.dwibagus.postcollab.vo.object;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
