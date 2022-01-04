@@ -51,8 +51,6 @@ public class LikesServiceImpl implements LikesService {
         System.out.println(likesList.size());
         int i = 0;
         while (i < likesList.size()){
-            System.out.println("mulai");
-            System.out.println(i);
             if(likesList.get(i).getPostId().equals(likes.getPostId()) && likesList.get(i).getUserId().equals(likes.getUserId())){
                 return null;
             }
@@ -75,13 +73,13 @@ public class LikesServiceImpl implements LikesService {
     @Override
     public Likes deleteLikesById(String id){
         Likes likes = likesRepository.findById(id).get();
-//        Post post = postRepository.findById(likes.getPostId()).get();
-//        if (post != null){
-//            post.setTotalComment(post.getTotalComment()-1);
-//            post.setUpdated_at(new Date());
-//            postRepository.save(post);
-//        }
-//        ResponseLikesTemplate responseLikesTemplate = this.getLikesWithUserById(id);
+        Post post = postRepository.findById(likes.getPostId()).get();
+        if (post != null){
+            post.setTotalComment(post.getTotalComment()-1);
+            post.setUpdated_at(new Date());
+            postRepository.save(post);
+        }
+        ResponseLikesTemplate responseLikesTemplate = this.getLikesWithUserById(id);
         likesRepository.deleteById(id);
         return likes;
     }
@@ -93,11 +91,11 @@ public class LikesServiceImpl implements LikesService {
 
         User user = restTemplate.getForObject(this.uriAuth + likes.getUserId(), User.class);
         System.out.println(likes.getCreated_at());
+        responseLikesTemplate.setId(likes.getId());
         responseLikesTemplate.setCreated_at(likes.getCreated_at());
         responseLikesTemplate.setUpdated_at(likes.getUpdated_at());
         responseLikesTemplate.setPost(postRepository.findById(likes.getPostId()).get());
         responseLikesTemplate.setUser(user);
-        System.out.println("berhasil service");
         return responseLikesTemplate;
     }
 
@@ -110,6 +108,7 @@ public class LikesServiceImpl implements LikesService {
         List<Likes> allLikes = likesRepository.findAll();
         for (int i = 0; i < allLikes.size(); i++){
             user = restTemplate.getForObject(this.uriAuth + allLikes.get(i).getUserId(), User.class);
+            responseLikesTemplate.setId(allLikes.get(i).getId());
             responseLikesTemplate.setCreated_at(allLikes.get(i).getCreated_at());
             responseLikesTemplate.setUpdated_at(allLikes.get(i).getUpdated_at());
             responseLikesTemplate.setPost(postRepository.findById(allLikes.get(i).getPostId()).get());

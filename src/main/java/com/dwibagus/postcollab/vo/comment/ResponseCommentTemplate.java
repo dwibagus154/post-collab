@@ -12,9 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseCommentTemplate {
+    private String id;
     private Post post;
     private User user;
-//    private Comment comment;
     private String description;
     private Date created_at;
     private Date updated_at;

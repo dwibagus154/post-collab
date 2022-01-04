@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseLikesTemplate {
+    private String id;
     private Post post;
     private User user;
     private Date created_at;

@@ -11,6 +11,7 @@ import java.util.Date;
 public class FilePost {
     @Id
     private String id;
+    private String postId;
     private String name = null;
     private Date created_at = new Date();
     private Date updated_at = new Date();

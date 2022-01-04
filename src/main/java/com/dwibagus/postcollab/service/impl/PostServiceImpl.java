@@ -27,7 +27,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-//    user ctrl + shif + t to create unit testing
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final FilePostRepository filePostRepository;
@@ -82,10 +81,6 @@ public class PostServiceImpl implements PostService {
 
     public Post deleteById(String id) {
         Post post = postRepository.findById(id).get();
-//        ResponseTemplateVO vo = this.getPostWithUserById(id);
-//
-////      send kafka
-//        producer.produce(id);
 
         List<Comment> commentList = commentRepository.findAll();
         for (int j = 0; j < commentList.size(); j++) {
@@ -93,7 +88,6 @@ public class PostServiceImpl implements PostService {
                 commentRepository.deleteById(commentList.get(j).getId());
             }
         }
-
 
         // delete like if post deleted
         List<Likes> likesList = likesRepository.findAll();
@@ -168,15 +162,10 @@ public class PostServiceImpl implements PostService {
             }
         }
 
-        System.out.println("selesai cek");
-
         posts = postRepository.findAll();
-        System.out.println(posts.size());
         for (int k = 0; k < posts.size(); k++){
-            System.out.println(k);
             vo = this.getPostWithUserById(posts.get(k).getId());
             allPostWithUser.add(vo);
-            System.out.println(k);
         }
         return allPostWithUser;
 

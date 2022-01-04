@@ -73,13 +73,13 @@ public class CommentServiceIml implements CommentService {
     @Override
     public Comment deleteCommentById(String id){
         Comment comment = commentRepository.findById(id).get();
-//        Post post = postRepository.findById(comment.getPostId()).get();
-//        if (post != null){
-//            post.setTotalComment(post.getTotalComment()-1);
-//            post.setUpdated_at(new Date());
-//            postRepository.save(post);
-//        }
-//        ResponseCommentTemplate responseCommentTemplate = this.getCommentWithUserById(id);
+        Post post = postRepository.findById(comment.getPostId()).get();
+        if (post != null){
+            post.setTotalComment(post.getTotalComment()-1);
+            post.setUpdated_at(new Date());
+            postRepository.save(post);
+        }
+        ResponseCommentTemplate responseCommentTemplate = this.getCommentWithUserById(id);
         commentRepository.deleteById(id);
         return comment;
     }
@@ -93,6 +93,7 @@ public class CommentServiceIml implements CommentService {
 
         User user = restTemplate.getForObject(this.uriAuth + comment.getUserId(), User.class);
 
+        responseCommentTemplate.setId(comment.getId());
         responseCommentTemplate.setDescription(comment.getDescription());
         responseCommentTemplate.setCreated_at(comment.getCreated_at());
         responseCommentTemplate.setUpdated_at(comment.getUpdated_at());
@@ -114,7 +115,6 @@ public class CommentServiceIml implements CommentService {
         if (messages.size() > 0){
             for (int i = 0; i < allComment.size(); i++) {
                 for (int j = 0; j < messages.size(); j++) {
-                    System.out.println("cek kafka");
                     if (allComment.get(i).getPostId().equals(messages.get(j))) {
                         commentRepository.deleteById(allComment.get(i).getId());
                     }
@@ -123,6 +123,7 @@ public class CommentServiceIml implements CommentService {
         }
         for (int i = 0; i < allComment.size(); i++){
             user = restTemplate.getForObject(this.uriAuth + allComment.get(i).getUserId(), User.class);
+            responseCommentTemplate.setId(allComment.get(i).getId());
             responseCommentTemplate.setDescription(allComment.get(i).getDescription());
             responseCommentTemplate.setCreated_at(allComment.get(i).getCreated_at());
             responseCommentTemplate.setUpdated_at(allComment.get(i).getUpdated_at());

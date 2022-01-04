@@ -1,10 +1,13 @@
 package com.dwibagus.postcollab.service.impl;
 
 import com.dwibagus.postcollab.model.Category;
+import com.dwibagus.postcollab.model.Post;
 import com.dwibagus.postcollab.repository.CategoryRepository;
 import com.dwibagus.postcollab.repository.PostRepository;
 import com.dwibagus.postcollab.service.CategoryService;
+import com.dwibagus.postcollab.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +19,10 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
+
+    @Autowired
+    private PostService postService;
 
     @Override
     public Category createCategory(Category category){
@@ -39,6 +46,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category deleteCategory(String id){
         Category category = categoryRepository.findById(id).get();
+
+        // delete post when category deleted
+        List<Post> postList = postRepository.findAll();
+        for (int i = 0; i < postList.size();i++){
+            if(postList.get(i).getCategoryId().equals(id)){
+                postService.deleteById(postList.get(i).getId());
+            }
+        }
         categoryRepository.deleteById(id);
         return category;
     }

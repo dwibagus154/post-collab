@@ -3,6 +3,8 @@ package com.dwibagus.postcollab.controller;
 
 import com.dwibagus.postcollab.kafka.KafkaConsumer;
 import com.dwibagus.postcollab.kafka.KafkaProducer;
+import com.dwibagus.postcollab.kafka.log.KafkaConsumerLog;
+import com.dwibagus.postcollab.kafka.log.KafkaProducerLog;
 import com.dwibagus.postcollab.model.*;
 import com.dwibagus.postcollab.payload.TokenResponse;
 import com.dwibagus.postcollab.response.CommonResponseGenerator;
@@ -19,7 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/post")
@@ -40,6 +46,12 @@ public class PostController {
 
     @Autowired
     private KafkaProducer producer;
+
+    @Autowired
+    private KafkaConsumerLog consumerLog;
+
+    @Autowired
+    private KafkaProducerLog producerLog;
 
 //    For Post
     @PostMapping
@@ -322,6 +334,25 @@ public class PostController {
     public List<String> receive() {
         return KafkaConsumer.messages;
     }
+
+    @PostMapping("/send/log")
+    public void sendLog(@RequestBody String data) {
+        Date now = new Date();
+        String format1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH).format(now);
+        format1 += ";";
+        format1 += "login";
+        producerLog.produce(format1);
+    }
+
+    @GetMapping("/receive/log")
+    public List<String> receiveLog() {
+        List<String> allmessage = KafkaConsumerLog.messages;
+        for(int i = 0; i < allmessage.size(); i++){
+            System.out.println(allmessage.get(i));
+        }
+        return KafkaConsumerLog.messages;
+    }
+
 
     public KafkaConsumer getConsumer() {
         return consumer;
