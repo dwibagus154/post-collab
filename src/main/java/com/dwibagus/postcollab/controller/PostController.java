@@ -10,6 +10,7 @@ import com.dwibagus.postcollab.service.CategoryService;
 import com.dwibagus.postcollab.service.CommentService;
 import com.dwibagus.postcollab.service.LikesService;
 import com.dwibagus.postcollab.service.PostService;
+import com.dwibagus.postcollab.vo.likes.ResponseLikesTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,9 +45,12 @@ public class PostController {
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody Post post){
         try {
+            if (postService.create(post) == null){
+                return new ResponseEntity<>(commonResponseGenerator.response(null, "please check your input", 400), HttpStatus.BAD_REQUEST);
+            }
             return new  ResponseEntity<>(commonResponseGenerator.response(postService.create(post), "create post success", 201), HttpStatus.CREATED);
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "can not create post", 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -73,10 +77,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.findById(id), "get post success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -85,10 +86,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.editById(id, post), "edit post success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
     @DeleteMapping("/{id}")
@@ -96,10 +94,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.deleteById(id), "delete post success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -108,10 +103,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.findCommentById(id), "get post with comment success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -120,10 +112,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.findLikesById(id), "get post with likes success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -133,7 +122,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(postService.getPostWithUserById(id), "get post with user success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post woth id " + id, 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no post with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -172,10 +161,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(categoryService.findByIdCategory(id), "get category success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no category with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -184,10 +170,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(categoryService.editCategory(id, category), "edit category success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -196,10 +179,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(categoryService.deleteCategory(id), "delete category success", 200));
         }catch (Exception e){
-            if (e.getMessage().equals("Not found")){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no category with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -227,7 +207,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentById(id), "get comment by id success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment with id " + id, 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -245,7 +225,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.deleteCommentById(id), "delete comment success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -255,7 +235,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUserById(id), "get likes with user success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes with id " + id, 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no comment with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -272,7 +252,12 @@ public class PostController {
     @PostMapping("/likes")
     public ResponseEntity<?> createLikes(@RequestBody Likes likes){
         try {
-            return new ResponseEntity<>(commonResponseGenerator.response(likesService.createLikes(likes), "create likes success", 201), HttpStatus.CREATED);
+            ResponseLikesTemplate responseLikesTemplate = likesService.createLikes(likes);
+            if (responseLikesTemplate == null){
+                return new ResponseEntity<>(commonResponseGenerator.response(null, "Post already like by user", 400), HttpStatus.BAD_REQUEST);
+            }
+
+            return new ResponseEntity<>(commonResponseGenerator.response(responseLikesTemplate, "create likes success", 201), HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
         }
@@ -292,7 +277,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.getLikesById(id), "get likes by id success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes with id " + id, 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -302,7 +287,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.deleteLikesById(id), "delete likes success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -314,7 +299,7 @@ public class PostController {
         try {
             return ResponseEntity.ok(commonResponseGenerator.response(likesService.getLikesWithUserById(id), "get likes with user success", 200));
         }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes with id " + id, 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "there is no likes with id " + id, 404), HttpStatus.NOT_FOUND);
         }
     }
 

@@ -48,6 +48,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public ResponseTemplateVO create(Post post){
+        // check category
+        Category category = categoryRepository.findById(post.getCategoryId()).get();
+        User user = restTemplate.getForObject(this.uriAuth + post.getUserId(), User.class);
+        if (category == null || user == null || post.getName() == null || post.getName().length() == 0){
+            return null;
+        }
         postRepository.save(post);
         return this.getPostWithUserById(post.getId());
     }
@@ -81,6 +87,23 @@ public class PostServiceImpl implements PostService {
 ////      send kafka
 //        producer.produce(id);
 
+        List<Comment> commentList = commentRepository.findAll();
+        for (int j = 0; j < commentList.size(); j++) {
+            if (commentList.get(j).getPostId().equals(id)) {
+                commentRepository.deleteById(commentList.get(j).getId());
+            }
+        }
+
+
+        // delete like if post deleted
+        List<Likes> likesList = likesRepository.findAll();
+
+        for (int j = 0; j < likesList.size(); j++) {
+            if (likesList.get(j).getPostId().equals(id)) {
+                likesRepository.deleteById(likesList.get(j).getId());
+            }
+        }
+
         postRepository.deleteById(id);
         return post;
     }
@@ -108,21 +131,43 @@ public class PostServiceImpl implements PostService {
         ResponseTemplateVO vo = new ResponseTemplateVO();
         List<Post> posts = postRepository.findAll();
 
+        List<String> postDeleted = new ArrayList<>();
         //        delete post if user deleted
         List<String> messages = consumer.messages;
         if (messages.size() > 0){
             for (int i = 0; i < posts.size(); i++) {
                 for (int j = 0; j < messages.size(); j++) {
-                    System.out.print("cek kafka ");
-                    System.out.print(i);
-                    System.out.println(j);
                     if (String.valueOf(posts.get(i).getUserId()).equals(messages.get(j))) {
-                        System.out.println("berhasill");
+                        postDeleted.add(posts.get(i).getId());
                         postRepository.deleteById(posts.get(i).getId());
                     }
                 }
             }
         }
+        // delete comment if post deleted
+        List<Comment> commentList = commentRepository.findAll();
+        if (postDeleted.size() > 0){
+            for (int i = 0; i < postDeleted.size(); i++) {
+                for (int j = 0; j < commentList.size(); j++) {
+                    if (commentList.get(j).getPostId().equals(postDeleted.get(i))) {
+                        commentRepository.deleteById(commentList.get(j).getId());
+                    }
+                }
+            }
+        }
+
+        // delete like if post deleted
+        List<Likes> likesList = likesRepository.findAll();
+        if (postDeleted.size() > 0){
+            for (int i = 0; i < postDeleted.size(); i++) {
+                for (int j = 0; j < likesList.size(); j++) {
+                    if (likesList.get(j).getPostId().equals(postDeleted.get(i))) {
+                        likesRepository.deleteById(likesList.get(j).getId());
+                    }
+                }
+            }
+        }
+
         System.out.println("selesai cek");
 
         posts = postRepository.findAll();
