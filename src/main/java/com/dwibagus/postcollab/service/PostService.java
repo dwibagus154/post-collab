@@ -8,6 +8,7 @@ import com.dwibagus.postcollab.vo.post.ResponsePostWithLikes;
 import com.dwibagus.postcollab.vo.post.ResponseTemplateVO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -15,7 +16,6 @@ public interface PostService {
 
     ResponseTemplateVO create(Post post);
     Post findById(String id);
-    FilePost uploadFile(MultipartFile file) throws IOException;
 
     List<Post> getAllPost();
 
@@ -29,4 +29,8 @@ public interface PostService {
     ResponsePostWithComment findCommentById(String id);
 
     ResponsePostWithLikes findLikesById(String id);
+
+    FilePost uploadFile(MultipartFile file, String id) throws IOException;
+
+    List<FilePost> getFilePost();
 }

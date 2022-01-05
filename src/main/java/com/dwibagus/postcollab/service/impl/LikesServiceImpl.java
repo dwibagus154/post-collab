@@ -79,7 +79,6 @@ public class LikesServiceImpl implements LikesService {
             post.setUpdated_at(new Date());
             postRepository.save(post);
         }
-        ResponseLikesTemplate responseLikesTemplate = this.getLikesWithUserById(id);
         likesRepository.deleteById(id);
         return likes;
     }

@@ -28,6 +28,8 @@ class CommentServiceImlTest {
     private CommentServiceIml service;
     @Mock
     private CommentRepository commentRepository;
+    @Mock
+    private PostRepository postRepository;
 
 
     @BeforeEach
@@ -67,6 +69,24 @@ class CommentServiceImlTest {
         }
         verify(commentRepository, times(1)).findAll();
         assertEquals(outputs, result);
+    }
+
+    @Test
+    public void deleteOne_WillDoNothing() {
+        // Given
+        Comment comment = EASY_RANDOM.nextObject(Comment.class);
+        Post post = EASY_RANDOM.nextObject(Post.class);
+
+        when(commentRepository.findById(comment.getId())).thenReturn(Optional.of(comment));
+        when(postRepository.findById(comment.getPostId())).thenReturn(Optional.of(post));
+        doNothing().when(commentRepository).deleteById(comment.getId());
+
+        // When
+        var result = service.deleteCommentById(comment.getId());
+
+        // Then
+        verify(commentRepository, times(1)).deleteById(comment.getId());
+        assertEquals(comment, result);
     }
 
 }

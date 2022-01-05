@@ -2,6 +2,7 @@ package com.dwibagus.postcollab.vo.post;
 
 import com.dwibagus.postcollab.model.Category;
 import com.dwibagus.postcollab.model.FilePost;
+import com.dwibagus.postcollab.vo.object.FileResponse;
 import com.dwibagus.postcollab.vo.object.LikesResponse;
 import com.dwibagus.postcollab.vo.object.User;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class ResponsePostWithLikes {
     private String name;
     private User user;
     private Category category;
-    private FilePost file;
+    private FileResponse file;
     private Integer totalLikes;
     private Integer totalComment;
     private Date created_at;

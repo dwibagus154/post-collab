@@ -75,15 +75,6 @@ public class PostController {
         }
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        try {
-            return ResponseEntity.ok(commonResponseGenerator.response(postService.uploadFile(file), "upload success", 200));
-        }catch (Exception e){
-            return new ResponseEntity<>(commonResponseGenerator.response(null, "can not upload image", 400), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @GetMapping("/original/{id}")
     public ResponseEntity<?> findById(@PathVariable String id){
         try {
@@ -147,6 +138,24 @@ public class PostController {
         }
     }
 
+//    filepost
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, String id) throws IOException {
+        try {
+            return new ResponseEntity<>(commonResponseGenerator.response(postService.uploadFile(file, id), "upload success", 201), HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "can not upload image", 400), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/filepost")
+    public ResponseEntity<?> getFilePost() {
+        try {
+            return ResponseEntity.ok(commonResponseGenerator.response(postService.getFilePost(), "get file post success", 200));
+        }catch (Exception e){
+            return new ResponseEntity<>(commonResponseGenerator.response(null, "can not get file post", 400), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 //    for category
     @PostMapping("/category")

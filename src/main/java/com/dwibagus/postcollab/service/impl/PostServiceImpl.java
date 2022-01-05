@@ -6,6 +6,7 @@ import com.dwibagus.postcollab.model.*;
 import com.dwibagus.postcollab.repository.*;
 import com.dwibagus.postcollab.service.PostService;
 import com.dwibagus.postcollab.vo.object.CommentResponse;
+import com.dwibagus.postcollab.vo.object.FileResponse;
 import com.dwibagus.postcollab.vo.object.LikesResponse;
 import com.dwibagus.postcollab.vo.post.ResponsePostWithComment;
 import com.dwibagus.postcollab.vo.post.ResponsePostWithLikes;
@@ -104,16 +105,6 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public FilePost uploadFile(MultipartFile file) throws IOException {
-        FilePost filePost = new FilePost();
-        if (file != null){
-            file.transferTo(new File("D:\\cth\\" + file.getOriginalFilename()));
-            filePost.setName(file.getOriginalFilename());
-        }
-        return filePostRepository.save(filePost);
-    }
-
-    @Override
     public List<Post> getAllPost(){
         return postRepository.findAll();
     }
@@ -182,8 +173,14 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("Not Found");
         });
         FilePost filePost = null;
-        if (post.getFile() != null){
-            filePost = filePostRepository.findById(post.getFile()).get();
+        FileResponse fileResponse = new FileResponse();
+        if (post.getFileId() != null){
+            filePost = filePostRepository.findById(post.getFileId()).get();
+            // create respons file
+            fileResponse.setId(filePost.getId());
+            fileResponse.setName(filePost.getName());
+            fileResponse.setCreated_at(filePost.getCreated_at());
+            fileResponse.setUpdated_at(filePost.getUpdated_at());
         }
 
         User user = restTemplate.getForObject(this.uriAuth + post.getUserId(), User.class);
@@ -193,7 +190,7 @@ public class PostServiceImpl implements PostService {
         vo.setName(post.getName());
         vo.setUser(user);
         vo.setCategory(category);
-        vo.setFile(filePost);
+        vo.setFile(fileResponse);
         vo.setTotalComment(post.getTotalComment());
         vo.setTotalLikes(post.getTotalLikes());
         vo.setCreated_at(post.getCreated_at());
@@ -271,6 +268,30 @@ public class PostServiceImpl implements PostService {
         responsePostWithLikes.setLikes(likesListPost);
 
         return responsePostWithLikes;
+    }
+
+    @Override
+    public FilePost uploadFile(MultipartFile file, String id) throws IOException {
+        FilePost filePost = new FilePost();
+        Post post = postRepository.findById(id).get();
+        if (file != null && post != null){
+            file.transferTo(new File("D:\\cth\\" + file.getOriginalFilename()));
+            filePost.setName(file.getOriginalFilename());
+            filePost.setPostId(id);
+
+
+        }
+        FilePost filePost1 = filePostRepository.save(filePost);
+
+        // edit filepostid in post
+        post.setFileId(filePost1.getId());
+        postRepository.save(post);
+        return filePost1;
+    }
+
+    @Override
+    public List<FilePost> getFilePost(){
+        return filePostRepository.findAll();
     }
 
 }

@@ -20,7 +20,7 @@ public class Post {
     private String categoryId;
     private String name;
     private Long userId;
-    private String file = null;
+    private String fileId = null;
     private Integer totalLikes = 0;
     private Integer totalComment = 0;
 

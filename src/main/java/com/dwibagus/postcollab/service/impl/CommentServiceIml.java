@@ -79,7 +79,6 @@ public class CommentServiceIml implements CommentService {
             post.setUpdated_at(new Date());
             postRepository.save(post);
         }
-        ResponseCommentTemplate responseCommentTemplate = this.getCommentWithUserById(id);
         commentRepository.deleteById(id);
         return comment;
     }

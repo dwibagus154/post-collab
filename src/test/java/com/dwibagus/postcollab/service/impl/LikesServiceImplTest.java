@@ -2,8 +2,10 @@ package com.dwibagus.postcollab.service.impl;
 
 import com.dwibagus.postcollab.model.Comment;
 import com.dwibagus.postcollab.model.Likes;
+import com.dwibagus.postcollab.model.Post;
 import com.dwibagus.postcollab.repository.CommentRepository;
 import com.dwibagus.postcollab.repository.LikesRepository;
+import com.dwibagus.postcollab.repository.PostRepository;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ class LikesServiceImplTest {
     private LikesServiceImpl service;
     @Mock
     private LikesRepository likesRepository;
+    @Mock
+    private PostRepository postRepository;
 
 
     @BeforeEach
@@ -67,5 +71,23 @@ class LikesServiceImplTest {
         }
         verify(likesRepository, times(1)).findAll();
         assertEquals(outputs, result);
+    }
+
+    @Test
+    public void deleteOne_WillDoNothing() {
+        // Given
+        Likes likes = EASY_RANDOM.nextObject(Likes.class);
+        Post post = EASY_RANDOM.nextObject(Post.class);
+
+        when(likesRepository.findById(likes.getId())).thenReturn(Optional.of(likes));
+        when(postRepository.findById(likes.getPostId())).thenReturn(Optional.of(post));
+        doNothing().when(likesRepository).deleteById(likes.getId());
+
+        // When
+        var result = service.deleteLikesById(likes.getId());
+
+        // Then
+        verify(likesRepository, times(1)).deleteById(likes.getId());
+        assertEquals(likes, result);
     }
 }
