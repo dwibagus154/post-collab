@@ -49,6 +49,11 @@ public class CommentServiceIml implements CommentService {
     public ResponseCommentTemplate createComment(Comment comment){
         Post post = postRepository.findById(comment.getPostId()).get();
         User user = restTemplate.getForObject(this.uriAuth + comment.getUserId(), User.class);
+        // check if user already activated
+        if (!user.isActive()){
+            return null;
+        }
+        // check if there is user and post
         if (post != null && user != null){
             post.setTotalComment(post.getTotalComment()+1);
             post.setUpdated_at(new Date());

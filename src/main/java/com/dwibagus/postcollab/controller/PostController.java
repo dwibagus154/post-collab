@@ -12,6 +12,7 @@ import com.dwibagus.postcollab.service.CategoryService;
 import com.dwibagus.postcollab.service.CommentService;
 import com.dwibagus.postcollab.service.LikesService;
 import com.dwibagus.postcollab.service.PostService;
+import com.dwibagus.postcollab.vo.comment.ResponseCommentTemplate;
 import com.dwibagus.postcollab.vo.likes.ResponseLikesTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,7 +209,11 @@ public class PostController {
     @PostMapping("/comment")
     public ResponseEntity<?> createComment(@RequestBody Comment comment){
         try {
-            return ResponseEntity.ok(commonResponseGenerator.response(commentService.createComment(comment), "create comment success", 200));
+            ResponseCommentTemplate responseCommentTemplate = commentService.createComment(comment);
+            if (responseCommentTemplate == null){
+                return new ResponseEntity<>(commonResponseGenerator.response(null, "user not active", 400), HttpStatus.BAD_REQUEST);
+            }
+            return ResponseEntity.ok(commonResponseGenerator.response( responseCommentTemplate, "create comment success", 200));
         }catch (Exception e){
             return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
         }
@@ -263,7 +268,7 @@ public class PostController {
     @GetMapping("/comment")
     public ResponseEntity<?> getCommentWithUser(){
         try {
-            return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUser(), "get likes with user success", 200));
+            return ResponseEntity.ok(commonResponseGenerator.response(commentService.getCommentWithUser(), "get comment with user success", 200));
         }catch (Exception e){
             return new ResponseEntity<>(commonResponseGenerator.response(null, e.getMessage(), 400), HttpStatus.BAD_REQUEST);
         }

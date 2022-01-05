@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
         // check category
         Category category = categoryRepository.findById(post.getCategoryId()).get();
         User user = restTemplate.getForObject(this.uriAuth + post.getUserId(), User.class);
-        if (category == null || user == null || post.getName() == null || post.getName().length() == 0){
+        if (category == null || !user.isActive() || user == null || post.getName() == null || post.getName().length() == 0){
             return null;
         }
         postRepository.save(post);
