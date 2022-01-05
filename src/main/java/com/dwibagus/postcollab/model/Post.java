@@ -19,6 +19,7 @@ public class Post {
     private String id;
     private String categoryId;
     private String name;
+    private String description = null;
     private Long userId;
     private String fileId = null;
     private Integer totalLikes = 0;

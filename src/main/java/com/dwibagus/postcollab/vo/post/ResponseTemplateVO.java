@@ -16,6 +16,7 @@ import java.util.Date;
 public class ResponseTemplateVO {
     private String id;
     private String name;
+    private String description;
     private User user;
     private Category category;
     private FileResponse file;

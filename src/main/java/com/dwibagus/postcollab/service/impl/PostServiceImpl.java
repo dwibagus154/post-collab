@@ -46,6 +46,8 @@ public class PostServiceImpl implements PostService {
     @Value("${uriAuth}")
     private String uriAuth;
 
+    private String uriFile = "D:\\GIT\\Github\\bni\\FinalProject\\postcollab\\image\\";
+
     @Override
     public ResponseTemplateVO create(Post post){
         // check category
@@ -74,6 +76,9 @@ public class PostServiceImpl implements PostService {
         }
         if (post.getUserId() != null){
             post1.setUserId(post.getUserId());
+        }
+        if (post.getDescription() != null){
+            post1.setDescription(post.getDescription());
         }
         post1.setUpdated_at(new Date());
         postRepository.save(post1);
@@ -188,6 +193,7 @@ public class PostServiceImpl implements PostService {
 //        create response
         vo.setId(post.getId());
         vo.setName(post.getName());
+        vo.setDescription(post.getDescription());
         vo.setUser(user);
         vo.setCategory(category);
         vo.setFile(fileResponse);
@@ -223,6 +229,7 @@ public class PostServiceImpl implements PostService {
 //        create response
         responsePostWithComment.setId(post.getId());
         responsePostWithComment.setName(post.getName());
+        responsePostWithComment.setDescription(post.getDescription());
         responsePostWithComment.setUser(post.getUser());
         responsePostWithComment.setCategory(post.getCategory());
         responsePostWithComment.setFile(post.getFile());
@@ -258,6 +265,7 @@ public class PostServiceImpl implements PostService {
 //        create response
         responsePostWithLikes.setId(post.getId());
         responsePostWithLikes.setName(post.getName());
+        responsePostWithLikes.setDescription(post.getDescription());
         responsePostWithLikes.setUser(post.getUser());
         responsePostWithLikes.setCategory(post.getCategory());
         responsePostWithLikes.setFile(post.getFile());
@@ -275,11 +283,8 @@ public class PostServiceImpl implements PostService {
         FilePost filePost = new FilePost();
         Post post = postRepository.findById(id).get();
         if (file != null && post != null){
-            file.transferTo(new File("D:\\cth\\" + file.getOriginalFilename()));
+            file.transferTo(new File(this.uriFile + file.getOriginalFilename()));
             filePost.setName(file.getOriginalFilename());
-            filePost.setPostId(id);
-
-
         }
         FilePost filePost1 = filePostRepository.save(filePost);
 

@@ -60,11 +60,10 @@ class PostServiceImplTest {
 //    @Test
 //    public void getOne_WillReturnNull() {
 //        // Given
-//        Post post = EASY_RANDOM.nextObject(Post.class);
-//        when(postRepository.findById(post.getId())).thenReturn(Optional.empty());
+//        when(postRepository.findById(id)).thenReturn(null);
 //
 //        // When
-//        var result = service.findById(post.getId());
+//        var result = service.findById(id);
 //
 //        // Then
 //        verify(postRepository, times(1)).findById(id);

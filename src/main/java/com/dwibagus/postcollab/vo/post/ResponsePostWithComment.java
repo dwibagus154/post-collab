@@ -18,6 +18,7 @@ import java.util.List;
 public class ResponsePostWithComment {
     private String id;
     private String name;
+    private String description;
     private User user;
     private Category category;
     private FileResponse file;
